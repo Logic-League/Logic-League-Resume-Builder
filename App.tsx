@@ -1,15 +1,16 @@
-
 import React, { useState, useCallback } from 'react';
 import Dashboard from './components/Dashboard';
 import Builder from './components/Builder';
-import type { TemplateKey } from './types';
+import type { TemplateKey, ResumeComplexity } from './types';
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<'dashboard' | 'builder'>('dashboard');
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateKey>('modern');
+  const [selectedComplexity, setSelectedComplexity] = useState<ResumeComplexity>('middle');
 
-  const handleStartBuilding = useCallback((template: TemplateKey) => {
+  const handleStartBuilding = useCallback((template: TemplateKey, complexity: ResumeComplexity) => {
     setSelectedTemplate(template);
+    setSelectedComplexity(complexity);
     setCurrentPage('builder');
   }, []);
 
@@ -23,6 +24,7 @@ const App: React.FC = () => {
       {currentPage === 'builder' && (
         <Builder
           initialTemplate={selectedTemplate}
+          initialComplexity={selectedComplexity}
           onBackToDashboard={handleBackToDashboard}
         />
       )}

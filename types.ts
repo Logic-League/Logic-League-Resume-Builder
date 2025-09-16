@@ -48,6 +48,8 @@ export interface ResumeData {
   extras: ExtraEntry[];
 }
 
+export type ResumeComplexity = 'simple' | 'middle' | 'complex';
+
 export type TemplateKey = 'minimal' | 'corporate' | 'creative' | 'classic' | 'modern';
 
 export interface Template {

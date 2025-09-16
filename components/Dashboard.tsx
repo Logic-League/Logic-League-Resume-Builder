@@ -1,15 +1,14 @@
-
 import React, { useState } from 'react';
 import { TEMPLATES } from '../constants';
-import type { Template, TemplateKey } from '../types';
+import type { Template, TemplateKey, ResumeComplexity } from '../types';
 
 interface DashboardProps {
-  onStartBuilding: (template: TemplateKey) => void;
+  onStartBuilding: (template: TemplateKey, complexity: ResumeComplexity) => void;
 }
 
-const TemplateCard: React.FC<{ template: Template; onClick: () => void }> = ({ template, onClick }) => (
+const TemplateCard: React.FC<{ template: Template; onClick: () => void; isSelected: boolean }> = ({ template, onClick, isSelected }) => (
   <div
-    className="group relative cursor-pointer overflow-hidden rounded-lg bg-white/30 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-2xl hover:scale-105"
+    className={`group relative cursor-pointer overflow-hidden rounded-lg bg-white/30 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-2xl hover:scale-105 ${isSelected ? 'ring-4 ring-offset-2 ring-[#a0522d]' : ''}`}
     onClick={onClick}
   >
     <img src={template.imageUrl} alt={template.name} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110" />
@@ -22,12 +21,23 @@ const TemplateCard: React.FC<{ template: Template; onClick: () => void }> = ({ t
 );
 
 const Dashboard: React.FC<DashboardProps> = ({ onStartBuilding }) => {
-  const [selectedFormat, setSelectedFormat] = useState('Simple');
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateKey | null>(null);
+  const [selectedComplexity, setSelectedComplexity] = useState<ResumeComplexity>('simple');
 
-  const handleFormatClick = (format: string) => {
-    setSelectedFormat(format);
-  };
+  const complexities: { key: ResumeComplexity, name: string }[] = [
+      { key: 'simple', name: 'Simple Resume' },
+      { key: 'middle', name: 'Middle Class Resume' },
+      { key: 'complex', name: 'Complex Resume' }
+  ];
   
+  const handleStart = () => {
+      if (selectedTemplate) {
+          onStartBuilding(selectedTemplate, selectedComplexity);
+      } else {
+          alert("Please select a template first.");
+      }
+  };
+
   return (
     <div className="container mx-auto px-4 py-16 text-center">
       <header className="mb-12">
@@ -40,36 +50,42 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartBuilding }) => {
       </header>
 
       <section className="mb-12">
-        <h2 className="text-3xl font-bold mb-8">Choose a Template</h2>
+        <h2 className="text-3xl font-bold mb-8">1. Choose a Template</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8">
           {TEMPLATES.map((template) => (
-            <TemplateCard key={template.key} template={template} onClick={() => onStartBuilding(template.key)} />
+            <TemplateCard 
+              key={template.key} 
+              template={template} 
+              onClick={() => setSelectedTemplate(template.key)}
+              isSelected={selectedTemplate === template.key} 
+            />
           ))}
         </div>
       </section>
 
       <section className="mb-12">
-        <h2 className="text-3xl font-bold mb-8">Select Your Resume Complexity</h2>
+        <h2 className="text-3xl font-bold mb-8">2. Select Your Resume Complexity</h2>
         <div className="flex flex-col md:flex-row justify-center items-center gap-4">
-          {['Simple Resume', 'Middle Class Resume', 'Complex Resume'].map((format) => (
+          {complexities.map((c) => (
             <button
-              key={format}
-              onClick={() => handleFormatClick(format)}
+              key={c.key}
+              onClick={() => setSelectedComplexity(c.key)}
               className={`px-8 py-3 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105 ${
-                selectedFormat === format
+                selectedComplexity === c.key
                   ? 'bg-gradient-to-r from-[#a0522d] to-[#8c4b2a] text-white shadow-lg'
                   : 'bg-white/50 backdrop-blur-sm text-[#4a3735] hover:bg-white/80'
               }`}
             >
-              {format}
+              {c.name}
             </button>
           ))}
         </div>
       </section>
 
       <button
-        onClick={() => onStartBuilding('modern')}
-        className="px-12 py-4 rounded-full text-xl font-bold text-white bg-gradient-to-r from-[#a0522d] to-[#8c4b2a] shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+        onClick={handleStart}
+        disabled={!selectedTemplate}
+        className="px-12 py-4 rounded-full text-xl font-bold text-white bg-gradient-to-r from-[#a0522d] to-[#8c4b2a] shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Start Building
       </button>

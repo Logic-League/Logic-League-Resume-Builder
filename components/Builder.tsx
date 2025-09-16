@@ -1,5 +1,4 @@
-
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import ResumeForm from './ResumeForm';
 import ResumePreview from './ResumePreview';
@@ -7,22 +6,36 @@ import ExportControls from './ExportControls';
 import useLocalStorage from '../hooks/useLocalStorage';
 import { INITIAL_RESUME_DATA } from '../constants';
 import { ArrowLeftIcon } from './icons';
-import type { ResumeData, TemplateKey, ActiveSection } from '../types';
+import type { ResumeData, TemplateKey, ActiveSection, ResumeComplexity } from '../types';
 
 declare const jspdf: any;
 declare const html2canvas: any;
 
-// FIX: Define the BuilderProps interface for the Builder component to resolve TypeScript error.
 interface BuilderProps {
   initialTemplate: TemplateKey;
+  initialComplexity: ResumeComplexity;
   onBackToDashboard: () => void;
 }
 
-const Builder: React.FC<BuilderProps> = ({ initialTemplate, onBackToDashboard }) => {
+const Builder: React.FC<BuilderProps> = ({ initialTemplate, initialComplexity, onBackToDashboard }) => {
   const [resumeData, setResumeData] = useLocalStorage<ResumeData>('resumeData', INITIAL_RESUME_DATA);
   const [activeTemplate, setActiveTemplate] = useState<TemplateKey>(initialTemplate);
+  const [activeComplexity, setActiveComplexity] = useState<ResumeComplexity>(initialComplexity);
+  // FIX: Added state for activeSection and setActiveSection which were used but not defined.
   const [activeSection, setActiveSection] = useState<ActiveSection>('personalInfo');
+  const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait');
   const previewRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    switch (activeTemplate) {
+      case 'creative':
+        setOrientation('landscape');
+        break;
+      default:
+        setOrientation('portrait');
+        break;
+    }
+  }, [activeTemplate]);
 
   const resumeTextForAI = useMemo(() => {
     return Object.values(resumeData).map(section => {
@@ -50,9 +63,9 @@ const Builder: React.FC<BuilderProps> = ({ initialTemplate, onBackToDashboard })
           const canvas = await html2canvas(resumeNode, { scale: 2 });
           const imgData = canvas.toDataURL('image/png');
           const pdf = new jspdf.jsPDF({
-            orientation: 'portrait',
+            orientation: orientation,
             unit: 'px',
-            format: [canvas.width, canvas.height]
+            format: orientation === 'portrait' ? [canvas.width, canvas.height] : [canvas.height, canvas.width]
           });
           pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
           pdf.save(`${fileName}.pdf`);
@@ -118,6 +131,10 @@ const Builder: React.FC<BuilderProps> = ({ initialTemplate, onBackToDashboard })
                     resumeData={resumeData}
                     activeTemplate={activeTemplate}
                     setActiveTemplate={setActiveTemplate}
+                    activeComplexity={activeComplexity}
+                    setActiveComplexity={setActiveComplexity}
+                    orientation={orientation}
+                    setOrientation={setOrientation}
                 />
             </div>
         </main>
