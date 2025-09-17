@@ -10,6 +10,7 @@ import type { ResumeData, TemplateKey, ActiveSection, ResumeComplexity } from '.
 
 declare const jspdf: any;
 declare const html2canvas: any;
+declare const html2pdf: any;
 
 interface BuilderProps {
   initialTemplate: TemplateKey;
@@ -65,19 +66,16 @@ const Builder: React.FC<BuilderProps> = ({ initialTemplate, initialComplexity, o
         top: 0;
         z-index: 9999;
         background: #eee;
-        width: 100vw;
-        height: 100vh;
-        overflow-y: scroll;
         padding: 2rem;
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
+        /* Let content define size */
       }
       /* --- A4 Page Format for Export --- */
       .export-mode .resume-container {
-        width: 210mm;
-        min-height: 297mm;
-        padding: 20mm;
+        /* This sets the width for html2canvas to capture */
+        width: ${orientation === 'portrait' ? '210mm' : '297mm'}; 
+        min-height: ${orientation === 'portrait' ? '297mm' : '210mm'}; /* Ensure it's at least one page for short resumes */
+        height: auto; /* Allow content to grow beyond one page */
+        padding: 0; /* Margins are handled by PDF generator */
         margin: 0;
         background: #fff;
         box-shadow: 0 0 10px rgba(0,0,0,0.2);
@@ -85,23 +83,29 @@ const Builder: React.FC<BuilderProps> = ({ initialTemplate, initialComplexity, o
         font-size: 10pt;
         display: flex;
         flex-direction: column;
-        justify-content: space-between; /* Evenly space content on short resumes */
+        justify-content: flex-start; 
       }
       .export-mode .resume-section {
-        margin-bottom: 1rem;
-        page-break-inside: avoid; /* Prevent sections from splitting awkwardly */
+        page-break-inside: avoid;
       }
       /* --- Print styles for exported HTML/DOCX --- */
       @media print {
         @page {
-          size: A4 portrait;
-          margin: 0; /* Margin is handled by .resume-container padding */
+          size: A4 ${orientation};
+          margin: 20mm;
         }
-        body { margin: 0; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        body { 
+          margin: 0; 
+          background: #fff; 
+          -webkit-print-color-adjust: exact; 
+          print-color-adjust: exact; 
+        }
         .resume-container {
-          box-shadow: none !important; margin: 0 !important;
-          width: 100% !important; min-height: 297mm !important;
-          padding: 20mm !important; box-sizing: border-box !important;
+          box-shadow: none !important; 
+          margin: 0 !important;
+          padding: 0 !important;
+          width: 100% !important; 
+          min-height: initial !important;
         }
       }
     `;
@@ -117,15 +121,13 @@ const Builder: React.FC<BuilderProps> = ({ initialTemplate, initialComplexity, o
     
     const resumeClone = originalResumeNode.cloneNode(true) as HTMLElement;
     resumeClone.classList.add('resume-container'); // Ensure the root has the container class for styling
-    resumeClone.style.aspectRatio = 'auto'; // Remove aspect ratio for correct height calculation
-    // FIX: Corrected typo from `resume-clone` to `resumeClone`
+    resumeClone.style.aspectRatio = 'auto'; 
     resumeClone.style.height = 'auto'; // Allow the container to grow with content
 
     exportContainer.appendChild(resumeClone);
     document.body.appendChild(exportContainer);
     
     try {
-      // Wait for images and styles to render in the cloned node
       await new Promise(resolve => setTimeout(resolve, 500));
 
       const externalStyles = `
@@ -136,51 +138,21 @@ const Builder: React.FC<BuilderProps> = ({ initialTemplate, initialComplexity, o
         <style>
           body { font-family: 'Inter', sans-serif; background-color: #eee; }
           h1, h2, h3, h4, h5, h6 { font-family: 'Playfair Display', serif; }
-          /* Apply A4 styles directly for HTML/DOCX viewing */
           ${exportStyles.replace(/.export-mode /g, '').replace('body.export-mode', 'body')}
         </style>
       `;
 
       switch (format) {
         case 'PDF': {
-          const canvas = await html2canvas(resumeClone, {
-            scale: 2,
-            useCORS: true,
-            backgroundColor: '#ffffff',
-            width: resumeClone.offsetWidth,
-            height: resumeClone.offsetHeight,
-            scrollX: 0,
-            scrollY: -window.scrollY
-          });
-
-          const imgData = canvas.toDataURL('image/png');
-          const pdf = new jspdf.jsPDF({
-            orientation: 'portrait',
-            unit: 'px',
-            format: 'a4'
-          });
-
-          const pdfWidth = pdf.internal.pageSize.getWidth();
-          const pdfHeight = pdf.internal.pageSize.getHeight();
-          const canvasWidth = canvas.width;
-          const canvasHeight = canvas.height;
-          const ratio = canvasWidth / pdfWidth;
-          const imgHeight = canvasHeight / ratio;
-
-          let heightLeft = imgHeight;
-          let position = 0;
-
-          pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
-          heightLeft -= pdfHeight;
-
-          while (heightLeft > 0) {
-            position = heightLeft - imgHeight;
-            pdf.addPage();
-            pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
-            heightLeft -= pdfHeight;
-          }
-          
-          pdf.save(`${fileName}.pdf`);
+          const opt = {
+            margin:       20, // 20mm margin
+            filename:     `${fileName}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true, letterRendering: true, scrollY: 0 },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: orientation }
+          };
+          // html2pdf handles pagination automatically.
+          await html2pdf().from(resumeClone).set(opt).save();
           break;
         }
 
