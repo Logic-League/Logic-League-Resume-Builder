@@ -112,14 +112,14 @@ const Builder: React.FC<BuilderProps> = ({ initialTemplate, initialComplexity, o
                 className="flex items-center gap-2 px-4 py-2 rounded-md text-[#4a3735] hover:bg-black/10 transition-colors"
             >
                 <ArrowLeftIcon className="w-5 h-5" />
-                <span>Dashboard</span>
+                <span className="hidden sm:inline">Dashboard</span>
             </button>
-             <h1 className="text-xl font-bold text-[#4a3735]">Resume Builder</h1>
-             <div></div>
+             <h1 className="text-lg sm:text-xl font-bold text-[#4a3735] text-center flex-grow">Resume Builder</h1>
+             <div className="w-12 sm:w-[130px]" aria-hidden="true"></div>
         </header>
-        <main className="flex-grow flex overflow-hidden">
+        <main className="flex-grow flex flex-col md:flex-row overflow-y-auto md:overflow-hidden">
             <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} />
-            <div className="flex-grow flex overflow-hidden">
+            <div className="flex-grow flex flex-col md:flex-row">
                 <ResumeForm
                     activeSection={activeSection}
                     resumeData={resumeData}

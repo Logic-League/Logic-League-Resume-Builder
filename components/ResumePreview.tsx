@@ -40,8 +40,8 @@ const ResumePreview = forwardRef<HTMLDivElement, ResumePreviewProps>(({ resumeDa
   }
 
   return (
-    <aside className="w-1/2 flex-shrink-0 p-6 bg-black/5 overflow-y-auto">
-      <div className="sticky top-6">
+    <aside className="w-full md:w-1/2 flex-shrink-0 p-4 md:p-6 bg-black/5 overflow-y-auto">
+      <div className="md:sticky md:top-6">
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
             <label htmlFor="template-select" className="font-bold text-sm mb-1 block text-[#4a3735]">Template</label>
