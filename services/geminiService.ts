@@ -3,14 +3,20 @@ import { GoogleGenAI, Type } from "@google/genai";
 
 const API_KEY = process.env.API_KEY;
 
-if (!API_KEY) {
+let ai: GoogleGenAI | null = null;
+
+if (API_KEY) {
+  try {
+    ai = new GoogleGenAI({ apiKey: API_KEY });
+  } catch (error) {
+    console.error("Failed to initialize GoogleGenAI:", error);
+  }
+} else {
   console.warn("API_KEY environment variable not set. AI features will be disabled.");
 }
 
-const ai = new GoogleGenAI({ apiKey: API_KEY! });
-
 export const getSmartSuggestions = async (jobTitle: string): Promise<string[]> => {
-  if (!API_KEY) return ["API Key not configured. Please set the API_KEY environment variable."];
+  if (!ai) return ["API Key not configured. AI features are disabled."];
   try {
     const prompt = `Generate 5 concise, impactful resume bullet points for a ${jobTitle}. Focus on achievements and metrics.`;
     const response = await ai.models.generateContent({
@@ -42,7 +48,7 @@ export const getSmartSuggestions = async (jobTitle: string): Promise<string[]> =
 };
 
 export const analyzeJobDescription = async (jobDescription: string, resumeText: string): Promise<string> => {
-    if (!API_KEY) return "API Key not configured. Please set the API_KEY environment variable.";
+    if (!ai) return "API Key not configured. AI features are disabled.";
     try {
         const prompt = `
         Analyze the following job description and resume content.
