@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import type { ResumeData, ActiveSection } from '../types';
 import { getSmartSuggestions, analyzeJobDescription } from '../services/geminiService';
 import { SparklesIcon, PlusCircleIcon, TrashIcon } from './icons';
+import useLocalStorage from '../hooks/useLocalStorage';
 
 interface ResumeFormProps {
   activeSection: ActiveSection;
@@ -261,66 +262,114 @@ const ExtrasForm: React.FC<Omit<ResumeFormProps, 'activeSection' | 'resumeTextFo
     );
 };
 
+const ApiKeyInput: React.FC<{ apiKey: string; setApiKey: (key: string) => void; }> = ({ apiKey, setApiKey }) => {
+  const [localKey, setLocalKey] = useState(apiKey);
+
+  return (
+    <div className="p-4 bg-yellow-100/50 border border-yellow-300 rounded-md">
+      <label htmlFor="api-key" className="block text-sm font-bold text-[#4a3735] mb-2">
+        Enter your Google Gemini API Key
+      </label>
+      <div className="flex gap-2">
+        <input
+          id="api-key"
+          type="password"
+          value={localKey}
+          onChange={(e) => setLocalKey(e.target.value)}
+          placeholder="Your API Key"
+          className="flex-grow p-2 border rounded bg-white/50"
+        />
+        <button
+          onClick={() => setApiKey(localKey)}
+          className="px-4 py-2 rounded-md bg-[#a0522d] text-white font-semibold hover:bg-[#8c4b2a]"
+        >
+          Save
+        </button>
+      </div>
+      <p className="text-xs text-gray-600 mt-2">
+        Your key is saved only in your browser. You can get a key from{' '}
+        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="underline">
+          Google AI Studio
+        </a>.
+      </p>
+    </div>
+  );
+};
+
 
 const AISuggestionsPanel: React.FC<{ jobTitle: string }> = ({ jobTitle }) => {
+  const [apiKey, setApiKey] = useLocalStorage('gemini-api-key', '');
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleFetchSuggestions = useCallback(async () => {
     setIsLoading(true);
-    const result = await getSmartSuggestions(jobTitle);
+    const result = await getSmartSuggestions(jobTitle, apiKey);
     setSuggestions(result);
     setIsLoading(false);
-  }, [jobTitle]);
+  }, [jobTitle, apiKey]);
 
   return (
     <div>
       <h3 className="text-2xl font-bold mb-4">AI Smart Suggestions</h3>
-      <p className="mb-4 text-[#6d5b59]">Get AI-powered suggestions for bullet points based on your job title: <strong>{jobTitle || "N/A"}</strong></p>
-      <button onClick={handleFetchSuggestions} disabled={isLoading || !jobTitle} className="flex items-center gap-2 px-4 py-2 rounded-md bg-gradient-to-r from-[#a0522d] to-[#8c4b2a] text-white disabled:opacity-50">
-        <SparklesIcon className="w-5 h-5"/>
-        {isLoading ? 'Generating...' : 'Get Suggestions'}
-      </button>
-      {suggestions.length > 0 && (
-        <div className="mt-4 p-4 bg-white/40 rounded-md space-y-2">
-          {suggestions.map((s, i) => <p key={i} className="p-2 bg-white/50 rounded">{s}</p>)}
-        </div>
+      {!apiKey ? (
+        <ApiKeyInput apiKey={apiKey} setApiKey={setApiKey} />
+      ) : (
+        <>
+          <p className="mb-4 text-[#6d5b59]">Get AI-powered suggestions for bullet points based on your job title: <strong>{jobTitle || "N/A"}</strong></p>
+          <button onClick={handleFetchSuggestions} disabled={isLoading || !jobTitle} className="flex items-center gap-2 px-4 py-2 rounded-md bg-gradient-to-r from-[#a0522d] to-[#8c4b2a] text-white disabled:opacity-50">
+            <SparklesIcon className="w-5 h-5"/>
+            {isLoading ? 'Generating...' : 'Get Suggestions'}
+          </button>
+          {suggestions.length > 0 && (
+            <div className="mt-4 p-4 bg-white/40 rounded-md space-y-2">
+              {suggestions.map((s, i) => <p key={i} className="p-2 bg-white/50 rounded">{s}</p>)}
+            </div>
+          )}
+        </>
       )}
     </div>
   );
 };
 
 const JobMatcherPanel: React.FC<{ resumeText: string }> = ({ resumeText }) => {
+    const [apiKey, setApiKey] = useLocalStorage('gemini-api-key', '');
     const [jobDescription, setJobDescription] = useState('');
     const [analysis, setAnalysis] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
     const handleAnalyze = useCallback(async () => {
         setIsLoading(true);
-        const result = await analyzeJobDescription(jobDescription, resumeText);
+        const result = await analyzeJobDescription(jobDescription, resumeText, apiKey);
         setAnalysis(result);
         setIsLoading(false);
-    }, [jobDescription, resumeText]);
+    }, [jobDescription, resumeText, apiKey]);
 
     return (
         <div>
             <h3 className="text-2xl font-bold mb-4">Job Description Matcher</h3>
-            <p className="mb-4 text-[#6d5b59]">Paste a job description to see how your resume matches and get suggestions for improvement.</p>
-            <textarea
-                value={jobDescription}
-                onChange={(e) => setJobDescription(e.target.value)}
-                placeholder="Paste job description here..."
-                rows={8}
-                className="w-full p-2 border rounded bg-white/50"
-            />
-            <button onClick={handleAnalyze} disabled={isLoading || !jobDescription} className="mt-2 px-4 py-2 rounded-md bg-gradient-to-r from-[#a0522d] to-[#8c4b2a] text-white disabled:opacity-50">
-                {isLoading ? 'Analyzing...' : 'Analyze'}
-            </button>
-            {analysis && (
-                <div className="mt-4 p-4 bg-white/40 rounded-md">
-                    <h4 className="font-bold mb-2">Analysis Result:</h4>
-                    <p className="whitespace-pre-wrap">{analysis}</p>
-                </div>
+            {!apiKey ? (
+              <ApiKeyInput apiKey={apiKey} setApiKey={setApiKey} />
+            ) : (
+              <>
+                <p className="mb-4 text-[#6d5b59]">Paste a job description to see how your resume matches and get suggestions for improvement.</p>
+                <textarea
+                    value={jobDescription}
+                    onChange={(e) => setJobDescription(e.target.value)}
+                    placeholder="Paste job description here..."
+                    rows={8}
+                    className="w-full p-2 border rounded bg-white/50"
+                />
+                <button onClick={handleAnalyze} disabled={isLoading || !jobDescription} className="mt-2 px-4 py-2 rounded-md bg-gradient-to-r from-[#a0522d] to-[#8c4b2a] text-white disabled:opacity-50">
+                    {isLoading ? 'Analyzing...' : 'Analyze'}
+                </button>
+                {analysis && (
+                    <div className="mt-4 p-4 bg-white/40 rounded-md">
+                        <h4 className="font-bold mb-2">Analysis Result:</h4>
+                        <p className="whitespace-pre-wrap">{analysis}</p>
+                    </div>
+                )}
+              </>
             )}
         </div>
     );

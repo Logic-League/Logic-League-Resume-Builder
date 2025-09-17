@@ -1,25 +1,38 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 
-const API_KEY = process.env.API_KEY;
-
 let ai: GoogleGenAI | null = null;
+let currentApiKey: string | null = null;
 
-if (API_KEY) {
+function getAiClient(apiKey: string): GoogleGenAI | null {
+  if (ai && currentApiKey === apiKey) {
+    return ai;
+  }
+  
+  if (!apiKey) {
+    console.warn("API Key is missing. AI features will be disabled.");
+    ai = null;
+    currentApiKey = null;
+    return null;
+  }
+
   try {
-    ai = new GoogleGenAI({ apiKey: API_KEY });
+    ai = new GoogleGenAI({ apiKey: apiKey });
+    currentApiKey = apiKey;
+    return ai;
   } catch (error) {
     console.error("Failed to initialize GoogleGenAI:", error);
+    ai = null;
+    currentApiKey = null;
+    return null;
   }
-} else {
-  console.warn("API_KEY environment variable not set. AI features will be disabled.");
 }
 
-export const getSmartSuggestions = async (jobTitle: string): Promise<string[]> => {
-  if (!ai) return ["API Key not configured. AI features are disabled."];
+export const getSmartSuggestions = async (jobTitle: string, apiKey: string): Promise<string[]> => {
+  const localAi = getAiClient(apiKey);
+  if (!localAi) return ["API Key not configured or invalid. Please set your key."];
   try {
     const prompt = `Generate 5 concise, impactful resume bullet points for a ${jobTitle}. Focus on achievements and metrics.`;
-    const response = await ai.models.generateContent({
+    const response = await localAi.models.generateContent({
         model: "gemini-2.5-flash",
         contents: prompt,
         config: {
@@ -43,12 +56,13 @@ export const getSmartSuggestions = async (jobTitle: string): Promise<string[]> =
     return result.suggestions || [];
   } catch (error) {
     console.error("Error fetching suggestions:", error);
-    return ["Failed to get AI suggestions. Please try again."];
+    return ["Failed to get AI suggestions. Please check your API key or try again."];
   }
 };
 
-export const analyzeJobDescription = async (jobDescription: string, resumeText: string): Promise<string> => {
-    if (!ai) return "API Key not configured. AI features are disabled.";
+export const analyzeJobDescription = async (jobDescription: string, resumeText: string, apiKey: string): Promise<string> => {
+    const localAi = getAiClient(apiKey);
+    if (!localAi) return "API Key not configured or invalid. Please set your key.";
     try {
         const prompt = `
         Analyze the following job description and resume content.
@@ -67,7 +81,7 @@ export const analyzeJobDescription = async (jobDescription: string, resumeText: 
 
         Provide your analysis in a concise summary.
         `;
-        const response = await ai.models.generateContent({
+        const response = await localAi.models.generateContent({
             model: "gemini-2.5-flash",
             contents: prompt,
         });
@@ -75,6 +89,6 @@ export const analyzeJobDescription = async (jobDescription: string, resumeText: 
         return response.text;
     } catch (error) {
         console.error("Error analyzing job description:", error);
-        return "Failed to analyze the job description. Please try again.";
+        return "Failed to analyze the job description. Please check your API key or try again.";
     }
 };
