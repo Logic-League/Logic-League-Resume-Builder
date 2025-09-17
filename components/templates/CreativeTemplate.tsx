@@ -17,7 +17,7 @@ const SkillBar: React.FC<{ skill: string; level?: number }> = ({ skill, level = 
 );
 
 const Section: React.FC<{title: string, children: React.ReactNode}> = ({ title, children }) => (
-    <section>
+    <section className="resume-section">
         <h2 className="text-xl font-bold text-orange-500 border-b-2 border-black/10 pb-1 mb-2">{title}</h2>
         {children}
     </section>
@@ -28,11 +28,11 @@ const SimpleLayout: React.FC<{resumeData: ResumeData}> = ({ resumeData }) => {
     const { personalInfo, experience, education, skills } = resumeData;
     return (
         <div className="p-6 bg-white text-black">
-            <header className="text-left mb-6">
+            <header className="text-left mb-6 resume-section">
                 <h1 className="text-5xl font-extrabold text-orange-500 tracking-tighter">{personalInfo.fullName}</h1>
                 <p className="text-2xl font-light text-black mt-1">{personalInfo.jobTitle}</p>
             </header>
-            <div className="mb-4 text-xs space-y-1 border-y-2 border-black/10 py-2">
+            <div className="mb-4 text-xs space-y-1 border-y-2 border-black/10 py-2 resume-section">
                 <p><strong>Email:</strong> {personalInfo.email}</p>
                 <p><strong>Phone:</strong> {personalInfo.phone}</p>
                 <p><strong>LinkedIn:</strong> {personalInfo.linkedIn}</p>
@@ -66,19 +66,19 @@ const MiddleLayout: React.FC<{resumeData: ResumeData}> = ({ resumeData }) => {
     const softSkills = skills.filter(s => s.type === 'soft');
     return (
         <div className="w-full h-full bg-white text-black font-sans text-[10px] grid grid-cols-3 grid-rows-6 gap-4 p-6 overflow-y-auto">
-            <header className="col-span-2 row-span-2 bg-orange-500 text-white p-6 flex flex-col justify-center rounded-lg">
+            <header className="col-span-2 row-span-2 bg-orange-500 text-white p-6 flex flex-col justify-center rounded-lg resume-section">
                 <h1 className="text-5xl font-extrabold tracking-tighter">{personalInfo.fullName}</h1>
                 <p className="text-2xl font-light mt-1">{personalInfo.jobTitle}</p>
             </header>
 
-            <div className="col-span-1 row-span-2 bg-black text-white p-4 flex flex-col justify-center space-y-2 rounded-lg text-xs">
+            <div className="col-span-1 row-span-2 bg-black text-white p-4 flex flex-col justify-center space-y-2 rounded-lg text-xs resume-section">
                 {personalInfo.phone && <p className="flex items-center gap-2"><PhoneIcon className="w-4 h-4 text-orange-500"/>{personalInfo.phone}</p>}
                 {personalInfo.email && <p className="flex items-center gap-2"><EnvelopeIcon className="w-4 h-4 text-orange-500"/>{personalInfo.email}</p>}
                 {personalInfo.linkedIn && <p className="flex items-center gap-2"><LinkIcon className="w-4 h-4 text-orange-500"/>{personalInfo.linkedIn}</p>}
                 {personalInfo.portfolio && <p className="flex items-center gap-2"><GlobeAltIcon className="w-4 h-4 text-orange-500"/>{personalInfo.portfolio}</p>}
             </div>
 
-            <section className="col-span-2 row-span-4 bg-white p-4 rounded-lg space-y-3 border border-black/10">
+            <section className="col-span-2 row-span-4 bg-white p-4 rounded-lg space-y-3 border border-black/10 resume-section">
                 <h2 className="text-xl font-bold text-orange-500">Experience</h2>
                 {experience.map(exp => (
                     <div key={exp.id}>
@@ -94,7 +94,7 @@ const MiddleLayout: React.FC<{resumeData: ResumeData}> = ({ resumeData }) => {
                 ))}
             </section>
 
-            <section className="col-span-1 row-span-2 bg-orange-500 text-white p-4 rounded-lg space-y-2">
+            <section className="col-span-1 row-span-2 bg-orange-500 text-white p-4 rounded-lg space-y-2 resume-section">
                  <h2 className="text-xl font-bold">Skills</h2>
                  <div className="space-y-2">
                      {hardSkills.slice(0, 3).map(skill => <SkillBar key={skill.id} skill={skill.name} />)}
@@ -102,7 +102,7 @@ const MiddleLayout: React.FC<{resumeData: ResumeData}> = ({ resumeData }) => {
                  </div>
             </section>
 
-            <section className="col-span-1 row-span-2 bg-orange-500 text-white p-4 rounded-lg space-y-2">
+            <section className="col-span-1 row-span-2 bg-orange-500 text-white p-4 rounded-lg space-y-2 resume-section">
                  <h2 className="text-xl font-bold">Education</h2>
                 {education.map(edu => (
                     <div key={edu.id}>
@@ -120,14 +120,14 @@ const ComplexLayout: React.FC<{resumeData: ResumeData}> = ({ resumeData }) => {
     const { personalInfo, experience, education, skills } = resumeData;
     return (
         <div className="grid grid-cols-5 grid-rows-4 gap-4 p-6 w-full h-full bg-white text-black">
-            <header className="col-span-3 row-span-1 p-4 flex flex-col justify-center">
+            <header className="col-span-3 row-span-1 p-4 flex flex-col justify-center resume-section">
                 <h1 className="text-5xl font-extrabold text-orange-500 tracking-tighter">{personalInfo.fullName}</h1>
                 <p className="text-2xl font-light text-black mt-1">{personalInfo.jobTitle}</p>
             </header>
-            <div className="col-span-2 row-span-1 bg-black text-white p-4 flex items-center justify-center">
+            <div className="col-span-2 row-span-1 bg-black text-white p-4 flex items-center justify-center resume-section">
                 {personalInfo.photo ? <img src={personalInfo.photo} alt="Profile" className="w-28 h-28 rounded-full object-cover" /> : <UserIcon className="w-24 h-24 text-orange-500"/>}
             </div>
-            <aside className="col-span-2 row-span-3 bg-orange-500 text-white p-4 space-y-4">
+            <aside className="col-span-2 row-span-3 bg-orange-500 text-white p-4 space-y-4 resume-section">
                 <div>
                     <h3 className="font-bold text-lg mb-2">CONTACT</h3>
                     <div className="text-sm space-y-1">
@@ -149,7 +149,7 @@ const ComplexLayout: React.FC<{resumeData: ResumeData}> = ({ resumeData }) => {
                     ))}
                 </div>}
             </aside>
-            <main className="col-span-3 row-span-3 p-4 space-y-3 overflow-y-auto">
+            <main className="col-span-3 row-span-3 p-4 space-y-3 overflow-y-auto resume-section">
                  {personalInfo.summary && <Section title="About Me"><p className="text-sm">{personalInfo.summary}</p></Section>}
                  {experience.length > 0 && <Section title="Experience">
                     {experience.map(exp => (
@@ -168,7 +168,7 @@ const ComplexLayout: React.FC<{resumeData: ResumeData}> = ({ resumeData }) => {
 
 const CreativeTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ resumeData, complexity }, ref) => {
     return (
-        <div ref={ref} className="w-full h-full font-sans overflow-y-auto">
+        <div ref={ref} className="w-full h-full font-sans overflow-y-auto resume-container">
             {complexity === 'simple' && <SimpleLayout resumeData={resumeData} />}
             {complexity === 'middle' && <MiddleLayout resumeData={resumeData} />}
             {complexity === 'complex' && <ComplexLayout resumeData={resumeData} />}

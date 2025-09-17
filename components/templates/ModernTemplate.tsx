@@ -17,7 +17,7 @@ const SkillBar: React.FC<{ skill: string }> = ({ skill }) => (
 );
 
 const Section: React.FC<{title: string, children: React.ReactNode}> = ({ title, children }) => (
-    <div>
+    <div className="resume-section">
         <h2 className="font-bold font-serif text-lg text-[#8c4b2a] border-b-2 border-[#e2d1c3] pb-1 mb-2">{title}</h2>
         {children}
     </div>
@@ -27,7 +27,7 @@ const SimpleLayout: React.FC<{resumeData: ResumeData}> = ({ resumeData }) => {
     const { personalInfo, experience, education, skills, extras } = resumeData;
     return (
         <div className="p-6 space-y-4">
-            <header className="text-center border-b-2 border-[#e2d1c3] pb-3">
+            <header className="text-center border-b-2 border-[#e2d1c3] pb-3 resume-section">
                 <h1 className="text-3xl font-bold font-serif">{personalInfo.fullName}</h1>
                 <p className="text-lg font-medium text-[#8c4b2a]">{personalInfo.jobTitle}</p>
                 <div className="flex justify-center flex-wrap gap-x-4 gap-y-1 text-xs mt-2">
@@ -74,8 +74,8 @@ const MiddleLayout: React.FC<{resumeData: ResumeData}> = ({ resumeData }) => {
     }, [extras]);
     
     return (
-        <div className="flex w-full h-full">
-            <div className="w-1/3 bg-[#e2d1c3] p-4 flex flex-col gap-3">
+        <div className="flex w-full min-h-full">
+            <div className="w-1/3 bg-[#e2d1c3] p-4 flex flex-col gap-3 resume-section">
                  {personalInfo.photo ? (
                     <img src={personalInfo.photo} alt="Profile" className="w-24 h-24 rounded-full object-cover mx-auto" />
                 ) : (
@@ -90,10 +90,22 @@ const MiddleLayout: React.FC<{resumeData: ResumeData}> = ({ resumeData }) => {
                 
                 <div className="space-y-1">
                     <h2 className="font-bold uppercase tracking-wider text-sm border-b-2 border-white/50 pb-1 mb-1">Contact</h2>
-                    {personalInfo.email && <p className="flex items-start gap-1.5 break-all"><EnvelopeIcon className="w-3 h-3 flex-shrink-0 mt-px"/>{personalInfo.email}</p>}
-                    {personalInfo.phone && <p className="flex items-start gap-1.5 break-all"><PhoneIcon className="w-3 h-3 flex-shrink-0 mt-px"/>{personalInfo.phone}</p>}
-                    {personalInfo.linkedIn && <p className="flex items-start gap-1.5 break-all"><LinkIcon className="w-3 h-3 flex-shrink-0 mt-px"/>{personalInfo.linkedIn}</p>}
-                    {personalInfo.portfolio && <p className="flex items-start gap-1.5 break-all"><GlobeAltIcon className="w-3 h-3 flex-shrink-0 mt-px"/>{personalInfo.portfolio}</p>}
+                    {personalInfo.email && <div className="flex items-start gap-1.5">
+                        <EnvelopeIcon className="w-3 h-3 flex-shrink-0 mt-px"/>
+                        <span className="break-all">{personalInfo.email}</span>
+                    </div>}
+                    {personalInfo.phone && <div className="flex items-start gap-1.5">
+                        <PhoneIcon className="w-3 h-3 flex-shrink-0 mt-px"/>
+                        <span className="break-all">{personalInfo.phone}</span>
+                    </div>}
+                    {personalInfo.linkedIn && <div className="flex items-start gap-1.5">
+                        <LinkIcon className="w-3 h-3 flex-shrink-0 mt-px"/>
+                        <span className="break-all">{personalInfo.linkedIn}</span>
+                    </div>}
+                    {personalInfo.portfolio && <div className="flex items-start gap-1.5">
+                        <GlobeAltIcon className="w-3 h-3 flex-shrink-0 mt-px"/>
+                        <span className="break-all">{personalInfo.portfolio}</span>
+                    </div>}
                 </div>
 
                 {hardSkills.length > 0 && <div className="space-y-1">
@@ -153,18 +165,30 @@ const ComplexLayout: React.FC<{resumeData: ResumeData}> = ({ resumeData }) => {
     const hardSkills = skills.filter(s => s.type === 'hard');
     
     return (
-        <div className="flex w-full h-full">
-            <div className="w-[35%] bg-[#e2d1c3] p-4 flex flex-col">
+        <div className="flex w-full min-h-full">
+            <div className="w-[35%] bg-[#e2d1c3] p-4 flex flex-col resume-section">
                 <div className="text-center mb-4">
                     <h1 className="text-3xl font-bold font-serif">{personalInfo.fullName}</h1>
                     <p className="text-lg font-medium text-[#8c4b2a]">{personalInfo.jobTitle}</p>
                 </div>
                 
                 <div className="space-y-2 text-xs">
-                    {personalInfo.email && <p className="flex items-start gap-1.5 break-all"><EnvelopeIcon className="w-3.5 h-3.5 flex-shrink-0 mt-px"/>{personalInfo.email}</p>}
-                    {personalInfo.phone && <p className="flex items-start gap-1.5 break-all"><PhoneIcon className="w-3.5 h-3.5 flex-shrink-0 mt-px"/>{personalInfo.phone}</p>}
-                    {personalInfo.linkedIn && <p className="flex items-start gap-1.5 break-all"><LinkIcon className="w-3.5 h-3.5 flex-shrink-0 mt-px"/>{personalInfo.linkedIn}</p>}
-                    {personalInfo.portfolio && <p className="flex items-start gap-1.5 break-all"><GlobeAltIcon className="w-3.5 h-3.5 flex-shrink-0 mt-px"/>{personalInfo.portfolio}</p>}
+                    {personalInfo.email && <div className="flex items-start gap-1.5">
+                        <EnvelopeIcon className="w-3.5 h-3.5 flex-shrink-0 mt-px"/>
+                        <span className="break-all">{personalInfo.email}</span>
+                    </div>}
+                    {personalInfo.phone && <div className="flex items-start gap-1.5">
+                        <PhoneIcon className="w-3.5 h-3.5 flex-shrink-0 mt-px"/>
+                        <span className="break-all">{personalInfo.phone}</span>
+                    </div>}
+                    {personalInfo.linkedIn && <div className="flex items-start gap-1.5">
+                        <LinkIcon className="w-3.5 h-3.5 flex-shrink-0 mt-px"/>
+                        <span className="break-all">{personalInfo.linkedIn}</span>
+                    </div>}
+                    {personalInfo.portfolio && <div className="flex items-start gap-1.5">
+                        <GlobeAltIcon className="w-3.5 h-3.5 flex-shrink-0 mt-px"/>
+                        <span className="break-all">{personalInfo.portfolio}</span>
+                    </div>}
                 </div>
                 <hr className="my-3 border-white/50"/>
                 {personalInfo.summary && <p className="text-xs">{personalInfo.summary}</p>}
@@ -218,7 +242,7 @@ const ComplexLayout: React.FC<{resumeData: ResumeData}> = ({ resumeData }) => {
 
 const ModernTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ resumeData, complexity }, ref) => {
     return (
-        <div ref={ref} className="w-full h-full bg-[#fdfbfb] text-[#4a3735] font-sans text-[8px] overflow-y-auto">
+        <div ref={ref} className="w-full h-full bg-[#fdfbfb] text-[#4a3735] font-sans text-[8px] overflow-y-auto resume-container">
             {complexity === 'simple' && <SimpleLayout resumeData={resumeData} />}
             {complexity === 'middle' && <MiddleLayout resumeData={resumeData} />}
             {complexity === 'complex' && <ComplexLayout resumeData={resumeData} />}

@@ -7,7 +7,7 @@ interface TemplateProps {
 }
 
 const Section: React.FC<{title: string, children: React.ReactNode}> = ({ title, children }) => (
-    <section>
+    <section className="resume-section">
         <h2 className="text-xs font-bold uppercase tracking-[.2em] text-[#8b5e34] mb-3">{title}</h2>
         {children}
     </section>
@@ -18,7 +18,7 @@ const SimpleLayout: React.FC<{resumeData: ResumeData}> = ({ resumeData }) => {
     const { personalInfo, experience, education, skills } = resumeData;
     return (
         <>
-            <header className="text-center mb-8">
+            <header className="text-center mb-8 resume-section">
                 <h1 className="text-5xl font-thin tracking-widest uppercase">{personalInfo.fullName}</h1>
                 <p className="text-lg font-light text-[#8b5e34] mt-1 tracking-wider">{personalInfo.jobTitle}</p>
             </header>
@@ -59,7 +59,7 @@ const MiddleLayout: React.FC<{resumeData: ResumeData}> = ({ resumeData }) => {
     return (
         <div className="grid grid-cols-3 gap-8">
             <main className="col-span-2 space-y-6">
-                <header>
+                <header className="resume-section">
                     <h1 className="text-5xl font-thin tracking-widest uppercase">{personalInfo.fullName}</h1>
                     <p className="text-lg font-light text-[#8b5e34] mt-1 tracking-wider">{personalInfo.jobTitle}</p>
                 </header>
@@ -107,7 +107,7 @@ const MiddleLayout: React.FC<{resumeData: ResumeData}> = ({ resumeData }) => {
                     </div>
                 </Section>}
                 
-                {extras.length > 0 && <section>
+                {extras.length > 0 && <section className="resume-section">
                     {extras.map(extra => (
                        <div key={extra.id} className="mb-3">
                             <h2 className="text-xs font-bold uppercase tracking-[.2em] text-[#8b5e34] mb-2">{extra.title}</h2>
@@ -124,12 +124,12 @@ const ComplexLayout: React.FC<{resumeData: ResumeData}> = ({ resumeData }) => {
     const { personalInfo, experience, education, skills } = resumeData;
     return (
         <div className="p-8">
-            <header className="mb-6 border-b border-[#8b5e34]/30 pb-4">
+            <header className="mb-6 border-b border-[#8b5e34]/30 pb-4 resume-section">
                 <h1 className="text-5xl font-thin tracking-widest uppercase">{personalInfo.fullName}</h1>
                 <p className="text-lg font-light text-[#8b5e34] mt-1 tracking-wider">{personalInfo.jobTitle}</p>
             </header>
             <div className="grid grid-cols-2 gap-8">
-                <div>
+                <div className="resume-section">
                     {personalInfo.summary && <Section title="Summary"><p className="leading-relaxed">{personalInfo.summary}</p></Section>}
                     {skills.length > 0 && <Section title="Skills">
                         <div className="flex flex-wrap gap-x-4 gap-y-1">
@@ -147,7 +147,7 @@ const ComplexLayout: React.FC<{resumeData: ResumeData}> = ({ resumeData }) => {
                         ))}
                     </Section>}
                 </div>
-                 <div>
+                 <div className="resume-section">
                      <Section title="Contact">
                         <div className="space-y-1">
                             <p><strong>Email:</strong> {personalInfo.email}</p>
@@ -176,7 +176,7 @@ const ComplexLayout: React.FC<{resumeData: ResumeData}> = ({ resumeData }) => {
 
 const MinimalTemplate = forwardRef<HTMLDivElement, TemplateProps>(({ resumeData, complexity }, ref) => {
     return (
-        <div ref={ref} className="w-full h-full bg-white text-[#5d4037] font-sans text-[9.5px] p-10 overflow-y-auto">
+        <div ref={ref} className="w-full h-full bg-white text-[#5d4037] font-sans text-[9.5px] p-10 overflow-y-auto resume-container">
             {complexity === 'simple' && <SimpleLayout resumeData={resumeData} />}
             {complexity === 'middle' && <MiddleLayout resumeData={resumeData} />}
             {complexity === 'complex' && <ComplexLayout resumeData={resumeData} />}
