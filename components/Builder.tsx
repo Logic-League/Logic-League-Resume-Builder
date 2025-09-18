@@ -71,9 +71,10 @@ const Builder: React.FC<BuilderProps> = ({ initialTemplate, initialComplexity, o
       }
       /* --- A4 Page Format for Export --- */
       .export-mode .resume-container {
-        /* This sets the width for html2canvas to capture */
-        width: ${orientation === 'portrait' ? '210mm' : '297mm'}; 
-        min-height: ${orientation === 'portrait' ? '297mm' : '210mm'}; /* Ensure it's at least one page for short resumes */
+        /* This sets the width for html2canvas to capture, accounting for PDF margins. */
+        /* A4 page (210mm) - 20mm margins each side = 170mm content width. */
+        width: ${orientation === 'portrait' ? '170mm' : '257mm'}; 
+        min-height: ${orientation === 'portrait' ? '257mm' : '170mm'}; /* A4 height (297mm) - 40mm margins */
         height: auto; /* Allow content to grow beyond one page */
         padding: 0; /* Margins are handled by PDF generator */
         margin: 0;

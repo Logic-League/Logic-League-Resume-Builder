@@ -37,7 +37,7 @@ const SimpleLayout: React.FC<{resumeData: ResumeData}> = ({ resumeData }) => {
                       <div key={exp.id} className="mb-3 font-sans">
                           <div className="flex justify-between items-baseline gap-4">
                             <h3 className="font-bold text-base break-words">{exp.jobTitle}</h3>
-                            <p className="flex-shrink-0 text-xs font-medium text-gray-600">{exp.startDate} – {exp.endDate}</p>
+                            <p className="text-xs font-medium text-gray-600">{exp.startDate} – {exp.endDate}</p>
                           </div>
                           <p className="font-semibold text-gray-800">{exp.company} {exp.location && `| ${exp.location}`}</p>
                           <ul className="list-disc list-inside mt-1 space-y-1 text-gray-700">
@@ -86,7 +86,7 @@ const MiddleLayout: React.FC<{resumeData: ResumeData}> = ({ resumeData }) => {
                         <div key={exp.id} className="mb-3 font-sans">
                             <div className="flex justify-between items-baseline gap-4">
                                 <h3 className="font-bold text-base break-words">{exp.jobTitle}</h3>
-                                <p className="flex-shrink-0 text-xs font-medium text-gray-600">{exp.startDate} – {exp.endDate}</p>
+                                <p className="text-xs font-medium text-gray-600">{exp.startDate} – {exp.endDate}</p>
                             </div>
                             <p className="font-semibold text-gray-800">{exp.company} {exp.location && `| ${exp.location}`}</p>
                             <ul className="list-disc list-inside mt-1 space-y-1 text-gray-700">
@@ -157,7 +157,7 @@ const ComplexLayout: React.FC<{resumeData: ResumeData}> = ({ resumeData }) => {
                             <div key={exp.id} className="mb-3 font-sans">
                                 <div className="flex justify-between items-baseline gap-4">
                                 <h3 className="font-bold text-base break-words">{exp.jobTitle}</h3>
-                                <p className="flex-shrink-0 text-xs font-medium text-gray-600">{exp.startDate} – {exp.endDate}</p>
+                                <p className="text-xs font-medium text-gray-600">{exp.startDate} – {exp.endDate}</p>
                                 </div>
                                 <p className="font-semibold text-gray-800">{exp.company} {exp.location && `| ${exp.location}`}</p>
                                 <ul className="list-disc list-inside mt-1 space-y-1 text-gray-700">
