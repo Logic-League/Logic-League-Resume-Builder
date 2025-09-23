@@ -11,6 +11,8 @@ import type { ResumeData, TemplateKey, ActiveSection, ResumeComplexity } from '.
 declare const jspdf: any;
 declare const html2canvas: any;
 declare const html2pdf: any;
+declare const htmlDocx: any;
+declare const saveAs: any;
 
 interface BuilderProps {
   initialTemplate: TemplateKey;
@@ -49,7 +51,7 @@ const Builder: React.FC<BuilderProps> = ({ initialTemplate, initialComplexity, o
     }).join('\n\n');
   }, [resumeData]);
 
-  const handleExport = async (format: 'PDF' | 'DOCX' | 'HTML') => {
+  const handleExport = async (format: 'PDF' | 'DOC' | 'HTML') => {
     if (!previewRef.current) {
       alert('Preview not available for export.');
       return;
@@ -171,22 +173,58 @@ const Builder: React.FC<BuilderProps> = ({ initialTemplate, initialComplexity, o
             break;
         }
         
-        case 'DOCX': {
-            const docxContent = `
-                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-                <head><meta charset='utf-8'><title>${fileName}</title>${externalStyles}</head>
-                <body>${resumeClone.outerHTML}</body>
+        case 'DOC': {
+            const docClone = resumeClone.cloneNode(true) as HTMLElement;
+
+            const inlineStylesRecursive = (element: Element) => {
+                const htmlElement = element as HTMLElement;
+                const computedStyle = window.getComputedStyle(htmlElement);
+                let cssText = "";
+                
+                const propertiesToCopy = [
+                    'color', 'background-color', 'font-family', 'font-size', 'font-weight',
+                    'font-style', 'text-align', 'line-height', 'text-transform', 'letter-spacing',
+                    'padding-top', 'padding-right', 'padding-bottom', 'padding-left',
+                    'margin-top', 'margin-right', 'margin-bottom', 'margin-left',
+                    'border-top-width', 'border-top-style', 'border-top-color',
+                    'border-right-width', 'border-right-style', 'border-right-color',
+                    'border-bottom-width', 'border-bottom-style', 'border-bottom-color',
+                    'border-left-width', 'border-left-style', 'border-left-color',
+                    'border-radius', 'width', 'height', 'vertical-align',
+                    'page-break-inside'
+                ];
+                
+                for (const prop of propertiesToCopy) {
+                    cssText += `${prop}: ${computedStyle.getPropertyValue(prop)}; `;
+                }
+                
+                htmlElement.style.cssText = cssText;
+                htmlElement.removeAttribute('class');
+                
+                for (const child of Array.from(htmlElement.children)) {
+                    inlineStylesRecursive(child);
+                }
+            };
+
+            inlineStylesRecursive(docClone);
+
+            const docContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                  <meta charset='utf-8'>
+                  <title>${fileName}</title>
+                  <style>
+                    body { font-family: 'Inter', sans-serif; }
+                    h1, h2, h3, h4, h5, h6 { font-family: 'Playfair Display', serif; }
+                    .resume-section { page-break-inside: avoid; }
+                  </style>
+                </head>
+                <body>${docClone.outerHTML}</body>
                 </html>
             `;
-            const docxBlob = new Blob([docxContent], { type: 'application/msword' });
-            const docxUrl = URL.createObjectURL(docxBlob);
-            const docxLink = document.createElement('a');
-            docxLink.href = docxUrl;
-            docxLink.download = `${fileName}.doc`;
-            document.body.appendChild(docxLink);
-            docxLink.click();
-            document.body.removeChild(docxLink);
-            URL.revokeObjectURL(docxUrl);
+            const docBlob = htmlDocx.asBlob(docContent);
+            saveAs(docBlob, `${fileName}.docx`);
             break;
         }
       }

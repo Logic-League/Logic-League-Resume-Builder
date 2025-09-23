@@ -2,7 +2,7 @@ import React from 'react';
 import { ArrowDownTrayIcon } from './icons';
 
 interface ExportControlsProps {
-  onExport: (format: 'PDF' | 'DOCX' | 'HTML') => void;
+  onExport: (format: 'PDF' | 'DOC' | 'HTML') => void;
 }
 
 const ExportControls: React.FC<ExportControlsProps> = ({ onExport }) => {
@@ -17,11 +17,11 @@ const ExportControls: React.FC<ExportControlsProps> = ({ onExport }) => {
         PDF
       </button>
       <button
-        onClick={() => onExport('DOCX')}
+        onClick={() => onExport('DOC')}
         className="flex items-center gap-2 px-5 py-2.5 rounded-full text-white font-semibold bg-gradient-to-r from-blue-500 to-blue-700 hover:scale-105 transition-transform"
       >
         <ArrowDownTrayIcon className="w-5 h-5" />
-        DOCX
+        DOC
       </button>
       <button
         onClick={() => onExport('HTML')}

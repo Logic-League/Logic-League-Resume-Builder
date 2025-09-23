@@ -121,7 +121,8 @@ const MiddleLayout: React.FC<{resumeData: ResumeData}> = ({ resumeData }) => {
                 {Object.entries(groupedExtras).map(([title, items]) => (
                     <div key={title} className="space-y-1">
                         <h2 className="font-bold uppercase tracking-wider text-sm border-b-2 border-white/50 pb-1 mb-1">{title}</h2>
-                         {items.map(item => <p key={item.id}>{item.content}</p>)}
+                         {/* FIX: Add Array.isArray check to prevent calling .map on a non-array value. */}
+                         {Array.isArray(items) && items.map(item => <p key={item.id}>{item.content}</p>)}
                     </div>
                 ))}
             </div>

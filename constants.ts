@@ -35,33 +35,30 @@ export const TEMPLATES: Template[] = [
 
 export const INITIAL_RESUME_DATA: ResumeData = {
   personalInfo: {
-    fullName: 'Jane Doe',
-    jobTitle: 'Software Engineer',
-    email: 'jane.doe@example.com',
-    phone: '(123) 456-7890',
-    linkedIn: 'linkedin.com/in/janedoe',
-    portfolio: 'janedoe.dev',
-    summary: 'Innovative and deadline-driven Software Engineer with 5+ years of experience designing and developing user-centered digital products from initial concept to final, polished deliverable.',
+    fullName: 'Thabo Nkosi',
+    jobTitle: 'Senior Lecturer',
+    email: 'thabo.nkosi@email.com',
+    phone: '+27 987 654 321',
+    linkedIn: 'linkedin.com/in/thabonkosi',
+    portfolio: 'thabonkosi.lec',
+    summary: 'Experienced lecturer with strong academic background and a record of published research.',
     photo: '',
   },
   education: [
-    { id: 'edu1', institution: 'State University', degree: 'B.S. in Computer Science', fieldOfStudy: 'Computer Science', graduationDate: '2018', description: 'Graduated with honors, Dean\'s List.' },
+    { id: 'edu1', institution: 'Wits University', degree: 'PhD in Information Systems', fieldOfStudy: 'Information Systems', graduationDate: '2015', description: 'Graduated with honors, Dean\'s List.' },
   ],
   experience: [
-    { id: 'exp1', company: 'Tech Corp', jobTitle: 'Senior Software Engineer', location: 'San Francisco, CA', startDate: '2020', endDate: 'Present', description: '- Led a team of 5 engineers in developing a new flagship product.\n- Implemented new features which increased user engagement by 20%.' },
-    { id: 'exp2', company: 'Innovate LLC', jobTitle: 'Software Engineer', location: 'Palo Alto, CA', startDate: '2018', endDate: '2020', description: '- Developed and maintained front-end and back-end services for customer-facing applications.\n- Collaborated with UX/UI designers to create intuitive user interfaces.' },
+    { id: 'exp1', company: 'University of Pretoria', jobTitle: 'Senior Lecturer', location: 'Present', startDate: '2016', endDate: '2025', description: '- Taught over 200 students annually in Information Systems.\n- Published 10 peer-reviewed articles on AI adoption.' },
   ],
   skills: [
-    { id: 'skill1', name: 'React', type: 'hard' },
-    { id: 'skill2', name: 'TypeScript', type: 'hard' },
-    { id: 'skill3', name: 'Node.js', type: 'hard' },
-    { id: 'skill4', name: 'SQL', type: 'hard' },
-    { id: 'skill5', name: 'Agile Methodologies', type: 'hard' },
+    { id: 'skill1', name: 'Research', type: 'hard' },
+    { id: 'skill2', name: 'Teaching', type: 'hard' },
+    { id: 'skill3', name: 'Academic Writing', type: 'hard' },
+    { id: 'skill4', name: 'Data Analysis', type: 'hard' },
     { id: 'skill6', name: 'Team Leadership', type: 'soft' },
     { id: 'skill7', name: 'Problem-Solving', type: 'soft' },
   ],
   extras: [
-    { id: 'extra1', title: 'Projects', content: 'Built a predictive analytics dashboard using Python and Power BI, deployed on AWS.'},
-    { id: 'extra2', title: 'Certifications', content: 'AWS Certified Cloud Practitioner (2023)'}
+    { id: 'extra1', title: 'Projects', content: '- Campaign for Nando’s SA (2023) – Social media visuals seen by 2M+ users.\n- UI Design for FinTech startup (2022).'},
   ],
 };
