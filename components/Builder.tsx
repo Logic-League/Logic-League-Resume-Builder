@@ -174,55 +174,58 @@ const Builder: React.FC<BuilderProps> = ({ initialTemplate, initialComplexity, o
         }
         
         case 'DOC': {
-            const docClone = resumeClone.cloneNode(true) as HTMLElement;
+            const resumeHtml = resumeClone.outerHTML;
 
-            const inlineStylesRecursive = (element: Element) => {
-                const htmlElement = element as HTMLElement;
-                const computedStyle = window.getComputedStyle(htmlElement);
-                let cssText = "";
-                
-                const propertiesToCopy = [
-                    'color', 'background-color', 'font-family', 'font-size', 'font-weight',
-                    'font-style', 'text-align', 'line-height', 'text-transform', 'letter-spacing',
-                    'padding-top', 'padding-right', 'padding-bottom', 'padding-left',
-                    'margin-top', 'margin-right', 'margin-bottom', 'margin-left',
-                    'border-top-width', 'border-top-style', 'border-top-color',
-                    'border-right-width', 'border-right-style', 'border-right-color',
-                    'border-bottom-width', 'border-bottom-style', 'border-bottom-color',
-                    'border-left-width', 'border-left-style', 'border-left-color',
-                    'border-radius', 'width', 'height', 'vertical-align',
-                    'page-break-inside'
-                ];
-                
-                for (const prop of propertiesToCopy) {
-                    cssText += `${prop}: ${computedStyle.getPropertyValue(prop)}; `;
-                }
-                
-                htmlElement.style.cssText = cssText;
-                htmlElement.removeAttribute('class');
-                
-                for (const child of Array.from(htmlElement.children)) {
-                    inlineStylesRecursive(child);
-                }
-            };
-
-            inlineStylesRecursive(docClone);
-
+            const docStyles = `
+              /* Word-specific CSS */
+              @page {
+                mso-page-orientation: ${orientation};
+                margin: 0.75in;
+              }
+              body {
+                font-family: Calibri, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+                font-size: 11pt;
+                color: #333;
+              }
+              h1, h2, h3, h4, h5, h6 {
+                font-weight: bold;
+                color: #000;
+                page-break-after: avoid;
+              }
+              h1 { font-size: 22pt; margin-bottom: 0.25em; }
+              h2 { font-size: 14pt; border-bottom: 1px solid #ccc; padding-bottom: 2px; margin-top: 1.2em; margin-bottom: 0.4em; }
+              h3 { font-size: 12pt; margin-bottom: 0.2em; }
+              p, li { 
+                font-size: 11pt; 
+                line-height: 1.4; 
+                margin: 0.2em 0;
+              }
+              ul, ol { margin-top: 0.2em; margin-bottom: 0.2em; padding-left: 25px; }
+              a { color: #0000EE; text-decoration: underline; }
+              
+              .resume-section, div, header, section, main, aside {
+                page-break-inside: avoid;
+              }
+              
+              svg {
+                display: none;
+              }
+            `;
+            
             const docContent = `
                 <!DOCTYPE html>
-                <html>
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' 
+                      xmlns:w='urn:schemas-microsoft-com:office:word' 
+                      xmlns='http://www.w3.org/TR/REC-html40'>
                 <head>
                   <meta charset='utf-8'>
                   <title>${fileName}</title>
-                  <style>
-                    body { font-family: 'Inter', sans-serif; }
-                    h1, h2, h3, h4, h5, h6 { font-family: 'Playfair Display', serif; }
-                    .resume-section { page-break-inside: avoid; }
-                  </style>
+                  <style>${docStyles}</style>
                 </head>
-                <body>${docClone.outerHTML}</body>
+                <body>${resumeHtml}</body>
                 </html>
             `;
+            
             const docBlob = htmlDocx.asBlob(docContent);
             saveAs(docBlob, `${fileName}.docx`);
             break;
